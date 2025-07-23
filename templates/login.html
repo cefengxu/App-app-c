@@ -1,0 +1,658 @@
+{% extends "base.html" %}
+
+{% block title %}身份验证 - NetSage {% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="login-visual">
+                <div class="terminal-simulation">
+                    <div class="terminal-header">
+                        <span class="terminal-button red"></span>
+                        <span class="terminal-button yellow"></span>
+                        <span class="terminal-button green"></span>
+                        <span class="terminal-title">access@netsage:~$</span>
+                    </div>
+                    <div class="terminal-content">
+                        <div class="command-output">
+                            <div class="line">$ ssh user@netsage.com</div>
+                            <div class="line">正在建立安全连接...</div>
+                            <div class="line success">✓ 连接已建立</div>
+                            <div class="line">验证身份中...</div>
+                            <div class="line warning">! 需要双因子认证</div>
+                            <div class="line">请检查您的邮箱</div>
+                            <div class="cursor-line">
+                                <span class="prompt">root@netsage:~$ </span>
+                                <span class="cursor">_</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-form-container">
+                <div class="login-header">
+                    <h2 class="terminal-text">ACCESS TERMINAL</h2>
+                    <p class="login-subtitle">输入凭据以访问系统</p>
+                </div>
+                
+                <div class="form-wrapper">
+                    <div class="form-group">
+                        <label for="email">EMAIL ADDRESS</label>
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                        <div class="input-border"></div>
+                    </div>
+                    
+                    <div class="form-group" id="code-input-group" style="display: none;">
+                        <label for="code">VERIFICATION CODE</label>
+                        <input type="text" id="code" name="code" placeholder="000000" required>
+                        <div class="input-border"></div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn-login" id="send-code-btn" onclick="sendCode()">
+                            <span class="btn-text">REQUEST ACCESS</span>
+                            <span class="btn-loading" style="display: none;">
+                                <span class="loading-dots">
+                                    <span></span><span></span><span></span>
+                                </span>
+                            </span>
+                        </button>
+                        
+                        <button class="btn-login" id="verify-code-btn" style="display: none;" onclick="verifyCode()">
+                            <span class="btn-text">ENTER SYSTEM</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="login-footer">
+                    <div class="security-notice">
+                        <span class="security-icon">🔒</span>
+                        <span>使用256位加密传输</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 0 50px;
+    background: var(--bg-primary);
+}
+
+.login-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.login-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.terminal-simulation {
+    width: 100%;
+    max-width: 500px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.terminal-header {
+    background: var(--bg-tertiary);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-button.red { background: #ff5f56; }
+.terminal-button.yellow { background: #ffbd2e; }
+.terminal-button.green { background: #27ca3f; }
+
+.terminal-title {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
+.terminal-content {
+    padding: 2rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+}
+
+.command-output .line {
+    margin: 0.75rem 0;
+    color: var(--text-secondary);
+}
+
+.line.success {
+    color: var(--text-primary);
+}
+
+.line.warning {
+    color: var(--warning);
+}
+
+.cursor-line {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.prompt {
+    color: var(--text-primary);
+}
+
+.cursor {
+    color: var(--text-primary);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.login-form-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.login-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.login-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.form-group input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    padding: 0.75rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-bottom-color: var(--text-primary);
+    box-shadow: 0 1px 0 0 var(--text-primary);
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.input-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient);
+    transition: width 0.3s ease;
+}
+
+.form-group input:focus + .input-border {
+    width: 100%;
+}
+
+.button-group {
+    margin-top: 2rem;
+}
+
+.btn-login {
+    width: 100%;
+    background: var(--gradient);
+    color: var(--bg-primary);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 65, 0.4);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-dots {
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.loading-dots span {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: loading 1.4s infinite ease-in-out;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes loading {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.login-footer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.security-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.security-icon {
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .login-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .login-form-container {
+        padding: 2rem;
+    }
+    
+    .login-visual {
+        order: 2;
+    }
+}
+</style>
+
+<script>
+async function sendCode() {
+    const email = document.getElementById('email').value;
+    const button = document.getElementById('send-code-btn');
+    const btnText = button.querySelector('.btn-text');
+    const btnLoading = button.querySelector('.btn-loading');
+    
+    if (!email) {
+        showNotification('请输入邮箱地址', 'error');
+        return;
+    }
+
+    // 显示加载状态
+    button.disabled = true;
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline-block';
+
+    try {
+        const response = await fetch('/api/send-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                app_id: 'app-c'  // 公测固定应用ID
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('code-input-group').style.display = 'block';
+            document.getElementById('verify-code-btn').style.display = 'block';
+            document.getElementById('send-code-btn').style.display = 'none';
+            showNotification('验证码已发送到您的邮箱', 'success');
+        } else {
+            showNotification(data.message || '发送验证码失败', 'error');
+        }
+    } catch (error) {
+        showNotification('网络错误，请稍后重试', 'error');
+    } finally {
+        button.disabled = false;
+        btnText.style.display = 'inline-block';
+        btnLoading.style.display = 'none';
+    }
+}
+
+async function verifyCode() {
+    const email = document.getElementById('email').value;
+    const code = document.getElementById('code').value;
+    const button = document.getElementById('verify-code-btn');
+    
+    if (!email || !code) {
+        showNotification('请输入邮箱和验证码', 'error');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = '验证中...';
+
+    try {
+        const response = await fetch('/api/verify-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                code: code,
+                app_id: 'app-c'  // 公测固定应用ID
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            // 检查是否为新用户并获得新的API Key
+            if (data.is_new_user && data.new_api_key) {
+                showNewUserWelcome(data.new_api_key);
+            } else {
+                showNotification('登录成功', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            }
+        } else {
+            showNotification(data.message || '验证失败', 'error');
+        }
+    } catch (error) {
+        showNotification('网络错误，请稍后重试', 'error');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'ENTER SYSTEM';
+    }
+}
+
+function showNewUserWelcome(newApiKey) {
+    // 创建欢迎弹窗
+    const modal = document.createElement('div');
+    modal.className = 'welcome-modal-overlay';
+    modal.innerHTML = `
+        <div class="welcome-modal">
+            <div class="welcome-header">
+                <h2>🎉 欢迎新用户！</h2>
+                <p>${newApiKey.message}</p>
+            </div>
+            <div class="api-key-info">
+                <div class="info-item">
+                    <label>您的API Key：</label>
+                    <div class="key-display">
+                        <code>${newApiKey.key}</code>
+                        <button onclick="copyToClipboard('${newApiKey.key}')" class="copy-btn">复制</button>
+                    </div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>计划类型：</label>
+                        <span class="info-value">${newApiKey.plan.toUpperCase()}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>使用限制：</label>
+                        <span class="info-value">${newApiKey.usage_limit} 次</span>
+                    </div>
+                    <div class="info-item">
+                        <label>有效期至：</label>
+                        <span class="info-value">${new Date(newApiKey.expires_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="welcome-actions">
+                <button class="btn-primary" onclick="closeWelcomeModal()">开始使用</button>
+            </div>
+        </div>
+    `;
+    
+    // 添加样式
+    const style = document.createElement('style');
+    style.textContent = `
+        .welcome-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+        .welcome-modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .welcome-header h2 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .welcome-header p {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .api-key-info {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .info-item {
+            margin-bottom: 1rem;
+        }
+        .info-item label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .key-display {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .key-display code {
+            flex: 1;
+            background: var(--bg-primary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+        }
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .info-value {
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+        .welcome-actions {
+            text-align: center;
+        }
+        .btn-primary {
+            padding: 0.75rem 2rem;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(modal);
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('API Key已复制到剪贴板', 'success');
+    }).catch(() => {
+        showNotification('复制失败，请手动复制', 'error');
+    });
+}
+
+function closeWelcomeModal() {
+    const modal = document.querySelector('.welcome-modal-overlay');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(modal);
+            window.location.href = '/dashboard';
+        }, 300);
+    }
+}
+
+function showNotification(message, type) {
+    // 创建通知元素
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // 样式
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 6px;
+        color: white;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'success' ? 'var(--text-primary)' : 'var(--accent)'};
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 3秒后自动移除
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// 添加动画样式
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %} 

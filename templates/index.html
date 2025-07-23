@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+
+{% block title %}NetSage - 极速网络数据采集平台{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="terminal-button red"></span>
+                    <span class="terminal-button yellow"></span>
+                    <span class="terminal-button green"></span>
+                    <span class="terminal-title">NetSage@terminal:~$</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="command-line">
+                        <span class="prompt">root@netsage:~$</span>
+                        <span class="command" id="typing-command">./hunt --target=web --speed=maximum</span>
+                    </div>
+                    <div class="output">
+                        <div class="success-line">[✓] 连接已建立</div>
+                        <div class="success-line">[✓] 代理池已激活</div>
+                        <div class="success-line">[✓] 反检测模块运行中</div>
+                        <div class="warning-line">[!] 目标锁定: 全网数据</div>
+                        <div class="scanning">扫描中... ████████████████ 100%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-text">
+                <h1 class="glitch" data-text="NetSage">NetSage</h1>
+                <p class="subtitle">
+                    <span class="terminal-text">极速 • 隐蔽 • 高效</span><br>
+                    专业级网络数据采集平台
+                </p>
+                <div class="cta-buttons">
+                    <a href="{{ url_for('dashboard') }}" class="btn-primary">开始狩猎</a>
+                    <a href="{{ url_for('api_docs') }}" class="btn-secondary">查看文档</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="terminal-text">核心能力</h2>
+            <p>为高效数据获取而生</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>毫秒级响应</h3>
+                <p>分布式架构<br>并发处理能力<br>99.9% SLA保障</p>
+                <div class="tech-stack">
+                    <span class="tech-tag">高并发</span>
+                    <span class="tech-tag">负载均衡</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>智能反检测</h3>
+                <p>动态IP轮换<br>UA随机化<br>行为模拟算法</p>
+                <div class="tech-stack">
+                    <span class="tech-tag">代理池</span>
+                    <span class="tech-tag">指纹伪装</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>智能搜索</h3>
+                <p>多引擎检索<br>结果聚合<br>语义理解</p>
+                <div class="tech-stack">
+                    <span class="tech-tag">多引擎</span>
+                    <span class="tech-tag">智能聚合</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>即插即用</h3>
+                <p>RESTful API<br>SDK支持<br>5分钟完成集成</p>
+                <div class="tech-stack">
+                    <span class="tech-tag">API优先</span>
+                    <span class="tech-tag">开发友好</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number terminal-text" data-count="99.9">0</div>
+                <div class="stat-label">可用性 %</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number terminal-text" data-count="50">0</div>
+                <div class="stat-label">毫秒平均响应</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number terminal-text" data-count="1000">0</div>
+                <div class="stat-label">+ 并发请求</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number terminal-text" data-count="24">0</div>
+                <div class="stat-label">小时不间断</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 100px 0 50px;
+    position: relative;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.terminal-window {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 500px;
+    min-width: 300px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.terminal-header {
+    background: var(--bg-tertiary);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-button.red { background: #ff5f56; }
+.terminal-button.yellow { background: #ffbd2e; }
+.terminal-button.green { background: #27ca3f; }
+
+.terminal-title {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
+.terminal-body {
+    padding: 1.5rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.command-line {
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.prompt {
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.command {
+    color: var(--warning);
+    margin-left: 0.5rem;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.output {
+    flex: 1;
+    overflow: hidden;
+}
+
+.output div {
+    margin: 0.5rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.success-line {
+    color: var(--text-primary);
+}
+
+.warning-line {
+    color: var(--warning);
+}
+
+.scanning {
+    color: var(--accent);
+    animation: pulse 2s infinite;
+}
+
+.hero-text h1 {
+    font-size: 4rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    text-shadow: 0 0 20px var(--text-primary);
+}
+
+.glitch {
+    position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    animation: glitch-1 0.5s infinite;
+    color: var(--accent);
+    z-index: -1;
+}
+
+.glitch::after {
+    animation: glitch-2 0.5s infinite;
+    color: var(--warning);
+    z-index: -2;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--text-muted);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-primary {
+    background: var(--gradient);
+    color: var(--bg-primary);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', monospace;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 65, 0.6);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--text-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', monospace;
+}
+
+.btn-secondary:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    box-shadow: 0 0 20px var(--text-primary);
+}
+
+.features {
+    padding: 5rem 0;
+    background: var(--bg-secondary);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: var(--text-primary);
+    box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.tech-stack {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tech-tag {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+}
+
+.stats {
+    padding: 3rem 0;
+    background: var(--bg-primary);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+@keyframes glitch-1 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-2 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(-2px, 2px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 数字计数动画
+    const stats = document.querySelectorAll('.stat-number');
+    stats.forEach(stat => {
+        const target = parseFloat(stat.getAttribute('data-count'));
+        let current = 0;
+        const increment = target / 100;
+        
+        function updateCounter() {
+            if (current < target) {
+                current += increment;
+                stat.textContent = Math.floor(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                stat.textContent = target;
+            }
+        }
+        
+        // 延迟启动动画
+        setTimeout(updateCounter, 1000);
+    });
+});
+</script>
+{% endblock %} 

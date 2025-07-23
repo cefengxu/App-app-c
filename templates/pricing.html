@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block title %}定价方案 - NetSage {% endblock %}
+
+{% block content %}
+<div class="pricing-container">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="terminal-text">选择你的火力配置</h1>
+            <p class="subtitle">为不同规模的数据狩猎需求，量身定制</p>
+        </div>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card starter">
+                <div class="card-header">
+                    <div class="plan-icon">🎯</div>
+                    <h3>入门版</h3>
+                    <div class="plan-subtitle">新手探索</div>
+                </div>
+                
+                <div class="price-section">
+                    <div class="price">
+                        <span class="currency">¥</span>
+                        <span class="amount">0</span>
+                        <span class="period">/月</span>
+                    </div>
+                    <div class="price-note">永久免费</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>1000次API调用</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>基础反检测能力</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>标准响应速度</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>社区技术支持</span>
+                    </div>
+                    <div class="feature-item disabled">
+                        <span class="cross">×</span>
+                        <span>自定义UA池</span>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('dashboard') }}" class="btn-plan">开始使用</a>
+            </div>
+            
+            <div class="pricing-card pro recommended">
+                <div class="recommended-badge">推荐</div>
+                <div class="card-header">
+                    <div class="plan-icon">⚡</div>
+                    <h3>专业版</h3>
+                    <div class="plan-subtitle">高效狩猎</div>
+                </div>
+                
+                <div class="price-section">
+                    <div class="price">
+                        <span class="currency">¥</span>
+                        <span class="amount">?</span>
+                        <span class="period">/月</span>
+                    </div>
+                    <div class="price-note">最受欢迎</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>50,000次 API调用/月</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>高级反检测算法</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>毫秒级响应速度</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>VIP技术支持</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>自定义UA池</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>IP代理池</span>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('dashboard') }}" class="btn-plan">公测阶段</a>
+            </div>
+            
+            <div class="pricing-card enterprise">
+                <div class="card-header">
+                    <div class="plan-icon">🚀</div>
+                    <h3>企业版</h3>
+                    <div class="plan-subtitle">无限火力</div>
+                </div>
+                
+                <div class="price-section">
+                    <div class="price">
+                        <span class="amount">定制</span>
+                    </div>
+                    <div class="price-note">按需配置</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>无限 API调用</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>企业级反检测</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>极速响应保障</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>专属客服团队</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>私有部署选项</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check">✓</span>
+                        <span>SLA服务保障</span>
+                    </div>
+                </div>
+                
+                <a href="mailto:sales@webhunter.com" class="btn-plan">联系我们</a>
+            </div>
+        </div>
+        
+        <div class="faq-section">
+            <h2 class="terminal-text">常见问题</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>如何计算API调用次数？</h3>
+                    <p>每次向我们的API发送请求都会计算为一次调用，无论请求是否成功。</p>
+                </div>
+                <div class="faq-item">
+                    <h3>是否有流量限制？</h3>
+                    <p>除了API调用次数限制外，我们不对数据传输量设置额外限制。</p>
+                </div>
+                <div class="faq-item">
+                    <h3>可以随时升级或降级吗？</h3>
+                    <p>是的，您可以随时在控制台中调整您的套餐配置。</p>
+                </div>
+                <div class="faq-item">
+                    <h3>企业版包含哪些额外服务？</h3>
+                    <p>企业版提供专属的技术支持、SLA保障以及可选的私有部署服务。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.pricing-container {
+    min-height: 100vh;
+    padding: 120px 0 50px;
+    background: var(--bg-primary);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.pricing-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 255, 65, 0.1);
+}
+
+.pricing-card.recommended {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+}
+
+.recommended-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient);
+    color: var(--bg-primary);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.plan-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.card-header h3 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.plan-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.price-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.price {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+
+.currency {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+.amount {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0.25rem;
+}
+
+.period {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.price-note {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.features-list {
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.feature-item.disabled {
+    opacity: 0.5;
+}
+
+.check {
+    color: var(--text-primary);
+    margin-right: 0.75rem;
+    font-weight: bold;
+}
+
+.cross {
+    color: var(--text-muted);
+    margin-right: 0.75rem;
+}
+
+.btn-plan {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: var(--gradient);
+    color: var(--bg-primary);
+    text-decoration: none;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-plan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 65, 0.4);
+}
+
+.enterprise .btn-plan {
+    background: transparent;
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+}
+
+.enterprise .btn-plan:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+.faq-section {
+    margin-top: 5rem;
+}
+
+.faq-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.faq-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.faq-item h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.faq-item p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .section-header h1 {
+        font-size: 2rem;
+    }
+    
+    .pricing-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,1026 @@
+{% extends "base.html" %}
+
+{% block title %}控制台 - NetSage {% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="container">
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <h1 class="terminal-text">SYSTEM ACCESS GRANTED</h1>
+                <p class="user-email">
+                    <span class="terminal-prompt">user@</span>{{ user_data.email if user_data.email else user_data.user.email }}
+                </p>
+                <div class="system-status">
+                    <span class="status-indicator online"></span>
+                    <span class="status-text">ONLINE</span>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-logout" onclick="logoutUser()">
+                        <span class="btn-icon">🚪</span>
+                        <span>登出</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">🔗</span>
+                        <span class="stat-label">API Keys</span>
+                    </div>
+                    <span class="stat-value terminal-text">{{ user_data.api_keys|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">⚡</span>
+                        <span class="stat-label">总使用次数</span>
+                    </div>
+                    <span class="stat-value terminal-text">
+                        {% set total_usage = user_data.api_keys|sum(attribute='usage_count') %}
+                        {{ total_usage }}
+                    </span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">🎯</span>
+                        <span class="stat-label">剩余额度</span>
+                    </div>
+                    <span class="stat-value terminal-text">
+                        {% set total_limit = user_data.api_keys|sum(attribute='usage_limit') %}
+                        {% set total_used = user_data.api_keys|sum(attribute='usage_count') %}
+                        {{ total_limit - total_used }}
+                    </span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">🆓</span>
+                        <span class="stat-label">公测状态</span>
+                    </div>
+                    <span class="stat-value terminal-text">FREE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="danger-zone">
+            <div class="danger-header">
+                <h3 class="terminal-text">⚠️ 危险操作区域</h3>
+                <p class="danger-description">以下操作不可逆转，请谨慎操作</p>
+            </div>
+            <div class="danger-actions">
+                <button class="btn-danger" onclick="showDeleteConfirmation()">
+                    <span class="btn-icon">🗑️</span>
+                    <span>注销账户</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-main">
+            <div class="section-header">
+                <h2 class="terminal-text">API KEY MANAGEMENT</h2>
+                <div class="header-actions">
+                    <button class="btn-create" onclick="showCreateKeyModal()">
+                        <span class="btn-icon">+</span>
+                        <span>创建API Key</span>
+                    </button>
+                    <div class="service-pricing">
+                        <span class="pricing-label">服务计费:</span>
+                        <span class="service-cost">Search(1次)</span>
+                        <span class="service-cost">Crawl(2次)</span>
+                        <span class="service-cost">Crawl+Rerank(3次)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="api-keys-grid">
+                {% for key in user_data.api_keys %}
+                <div class="api-key-card">
+                    <div class="api-key-header">
+                        <div class="status-section">
+                            <span class="status-badge {% if key.status == 'active' %}status-active{% else %}status-inactive{% endif %}">
+                                <span class="status-dot"></span>
+                                {{ key.status|upper }}
+                            </span>
+                        </div>
+                        <div class="key-actions">
+                            <button class="btn-icon" onclick="toggleApiKey(this)" title="显示/隐藏">
+                                <span class="icon">👁️</span>
+                            </button>
+                            <button class="btn-icon" onclick="copyApiKey('{{ key.key }}')" title="复制">
+                                <span class="icon">📋</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="api-key-content">
+                        <div class="key-display">
+                            <label class="key-label">API KEY</label>
+                            <div class="key-value-wrapper">
+                                <code class="api-key-value">{{ key.key }}</code>
+                                <code class="api-key-mask">••••••••••••••••••••••••••••••••••••••••</code>
+                            </div>
+                        </div>
+                        
+                        <div class="api-key-details">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">创建时间</span>
+                                    <span class="detail-value">{{ key.created_at }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">过期时间</span>
+                                    <span class="detail-value">{{ key.expires_at }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">使用限制</span>
+                                    <span class="detail-value terminal-text">{{ key.usage_limit }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">已使用</span>
+                                    <span class="detail-value terminal-text">{{ key.usage_count }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="usage-bar">
+                                <div class="usage-progress" style="width: {{ (key.usage_count / key.usage_limit * 100) if key.usage_limit > 0 else 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard {
+    min-height: 100vh;
+    padding: 120px 0 50px;
+    background: var(--bg-primary);
+}
+
+.dashboard-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-section h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.user-email {
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.terminal-prompt {
+    color: var(--text-primary);
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.online {
+    background: var(--text-primary);
+    box-shadow: 0 0 10px var(--text-primary);
+}
+
+.status-text {
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.user-actions {
+    margin-top: 1.5rem;
+}
+
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-logout:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 255, 65, 0.2);
+}
+
+.btn-logout .btn-icon {
+    font-size: 1rem;
+}
+
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--text-primary);
+    box-shadow: 0 5px 15px rgba(0, 255, 65, 0.1);
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.stat-icon {
+    font-size: 1.2rem;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: block;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.service-pricing {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.pricing-label {
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.service-cost {
+    background: var(--bg-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    font-family: 'Fira Code', monospace;
+}
+
+.btn-create {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gradient);
+    color: var(--bg-primary);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 65, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.danger-zone {
+    background: var(--bg-secondary);
+    border: 1px solid #ff6b6b;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.1);
+}
+
+.danger-header {
+    margin-bottom: 1.5rem;
+}
+
+.danger-header h3 {
+    color: #ff6b6b;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.danger-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.danger-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-danger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+}
+
+.api-keys-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.api-key-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.api-key-card:hover {
+    border-color: var(--text-primary);
+    box-shadow: 0 10px 30px rgba(0, 255, 65, 0.1);
+}
+
+.api-key-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-family: 'Fira Code', monospace;
+}
+
+.status-badge.status-active {
+    background: rgba(0, 255, 65, 0.1);
+    color: var(--text-primary);
+    border: 1px solid var(--text-primary);
+}
+
+.status-badge.status-inactive {
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+}
+
+.key-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-icon:hover {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+}
+
+.key-display {
+    margin-bottom: 1.5rem;
+}
+
+.key-label {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.key-value-wrapper {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.api-key-value,
+.api-key-mask {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    word-break: break-all;
+}
+
+.api-key-mask {
+    letter-spacing: 2px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.detail-label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.detail-value {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.usage-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-primary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.usage-progress {
+    height: 100%;
+    background: var(--gradient);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .quick-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleApiKey(button) {
+    const card = button.closest('.api-key-card');
+    const keyValue = card.querySelector('.api-key-value');
+    const keyMask = card.querySelector('.api-key-mask');
+    const icon = button.querySelector('.icon');
+    
+    if (keyValue.style.display === 'none') {
+        keyValue.style.display = 'block';
+        keyMask.style.display = 'none';
+        icon.textContent = '🙈';
+        
+        // 添加视觉反馈
+        button.style.background = 'rgba(0, 255, 65, 0.1)';
+        button.style.borderColor = 'var(--text-primary)';
+        button.style.color = 'var(--text-primary)';
+    } else {
+        keyValue.style.display = 'none';
+        keyMask.style.display = 'block';
+        icon.textContent = '👁️';
+        
+        // 恢复原样式
+        button.style.background = 'var(--bg-primary)';
+        button.style.borderColor = 'var(--border)';
+        button.style.color = 'var(--text-secondary)';
+    }
+}
+
+// 初始化时隐藏所有API密钥
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.api-key-value').forEach(el => {
+        el.style.display = 'none';
+    });
+    document.querySelectorAll('.api-key-mask').forEach(el => {
+        el.style.display = 'block';
+    });
+});
+
+// 用户登出功能
+async function logoutUser() {
+    const confirmation = confirm(
+        `🚪 确认要登出当前账户吗？\n\n` +
+        `您将需要重新登录才能访问控制台。`
+    );
+    
+    if (!confirmation) {
+        return;
+    }
+    
+    try {
+        // 显示加载状态
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                        background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; 
+                        justify-content: center; z-index: 9999; color: var(--text-primary);">
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🚪</div>
+                    <div>正在登出...</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+        
+        const response = await fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        document.body.removeChild(loadingOverlay);
+        
+        if (response.ok && result.success) {
+            alert(
+                `✅ ${result.message}\n\n` +
+                `您已成功登出，即将跳转到登录页面。`
+            );
+            
+            // 重定向到登录页面
+            window.location.href = '/login';
+        } else {
+            alert(`❌ 登出失败: ${result.error || result.message || '未知错误'}`);
+        }
+    } catch (error) {
+        // 移除加载覆盖层（如果存在）
+        const overlay = document.querySelector('[style*="position: fixed"]');
+        if (overlay) {
+            document.body.removeChild(overlay);
+        }
+        alert(`❌ 网络错误: ${error.message}`);
+    }
+}
+
+// 显示账户注销确认对话框
+function showDeleteConfirmation() {
+    const userEmail = '{{ user_data.email if user_data.email else user_data.user.email }}';
+    const confirmation = confirm(
+        `⚠️ 确认要注销账户吗？\n\n` +
+        `账户邮箱: ${userEmail}\n` +
+        `此操作将永久删除您的所有数据，包括:\n` +
+        `• 所有API密钥\n` +
+        `• 使用记录\n` +
+        `• 账户信息\n\n` +
+        `此操作不可撤销！确定要继续吗？`
+    );
+    
+    if (confirmation) {
+        showFinalConfirmation();
+    }
+}
+
+// 显示最终确认对话框
+function showFinalConfirmation() {
+    const confirmationText = prompt(
+        `最后确认：\n\n` +
+        `请输入 "CONFIRM_DELETE" 来确认注销账户:`
+    );
+    
+    if (confirmationText === 'CONFIRM_DELETE') {
+        deleteAccount();
+    } else if (confirmationText !== null) {
+        alert('输入不正确，账户注销已取消。');
+    }
+}
+
+// 执行账户注销
+async function deleteAccount() {
+    const userEmail = '{{ user_data.email if user_data.email else user_data.user.email }}';
+    
+    try {
+        // 显示加载状态
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                        background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; 
+                        justify-content: center; z-index: 9999; color: var(--text-primary);">
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                    <div>正在注销账户...</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+        
+        const response = await fetch('/api/self-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: userEmail,
+                app_id: 'app-c',
+                confirmation: 'CONFIRM_DELETE'
+            })
+        });
+        
+        const result = await response.json();
+        document.body.removeChild(loadingOverlay);
+        
+        if (response.ok) {
+            alert(
+                `✅ 账户注销成功！\n\n` +
+                `邮箱: ${result.email}\n` +
+                `删除的API密钥数量: ${result.deleted_api_keys}\n` +
+                `删除时间: ${result.timestamp}\n\n` +
+                `您的所有数据已被完全删除。`
+            );
+            
+            // 重定向到首页
+            window.location.href = '/';
+        } else {
+            alert(`❌ 注销失败: ${result.error || result.message || '未知错误'}`);
+        }
+    } catch (error) {
+        document.body.removeChild(document.querySelector('[style*="position: fixed"]'));
+        alert(`❌ 网络错误: ${error.message}`);
+    }
+}
+
+// 显示创建API Key弹窗
+function showCreateKeyModal() {
+    const modal = document.createElement('div');
+    modal.className = 'create-key-modal-overlay';
+    modal.innerHTML = `
+        <div class="create-key-modal">
+            <div class="modal-header">
+                <h3>创建新的API Key</h3>
+                <button onclick="closeCreateKeyModal()" class="close-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>套餐类型</label>
+                    <select id="plan-select">
+                        <option value="free">免费套餐 (30天, 100次)</option>
+                        <option value="pro">专业套餐 (90天, 10000次)</option>
+                        <option value="enterprise">企业套餐 (365天, 无限)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>有效期 (天)</label>
+                    <input type="number" id="expires-days" value="30" min="1" max="365">
+                </div>
+                <div class="form-group">
+                    <label>使用限制 (次)</label>
+                    <input type="number" id="usage-limit" value="100" min="1">
+                </div>
+                <div class="beta-notice">
+                    <p>🆓 公测期间，不支持创建API Key</p>
+                </div>
+            </div>
+            <!-- <div class="modal-footer">
+                <button onclick="closeCreateKeyModal()" class="btn-cancel">取消</button>
+                <button onclick="createApiKey()" class="btn-confirm">创建</button>
+            </div> -->
+        </div>
+    `;
+    
+    // 添加样式
+    const style = document.createElement('style');
+    style.textContent = `
+        .create-key-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+        .create-key-modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+        .beta-notice {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .beta-notice p {
+            margin: 0;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        .btn-cancel,
+        .btn-confirm {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-cancel {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+        }
+        .btn-confirm {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(modal);
+    
+    // 套餐选择联动
+    document.getElementById('plan-select').addEventListener('change', function() {
+        const plan = this.value;
+        const expiresInput = document.getElementById('expires-days');
+        const limitInput = document.getElementById('usage-limit');
+        
+        switch(plan) {
+            case 'free':
+                expiresInput.value = 30;
+                limitInput.value = 100;
+                break;
+            case 'pro':
+                expiresInput.value = 90;
+                limitInput.value = 10000;
+                break;
+            case 'enterprise':
+                expiresInput.value = 365;
+                limitInput.value = 100000;
+                break;
+        }
+    });
+}
+
+function closeCreateKeyModal() {
+    const modal = document.querySelector('.create-key-modal-overlay');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(modal);
+        }, 300);
+    }
+}
+
+async function createApiKey() {
+    const plan = document.getElementById('plan-select').value;
+    const expiresDays = parseInt(document.getElementById('expires-days').value);
+    const usageLimit = parseInt(document.getElementById('usage-limit').value);
+    
+    if (!expiresDays || !usageLimit) {
+        alert('请填写完整信息');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/create-api-key', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                plan: plan,
+                expires_in_days: expiresDays,
+                usage_limit: usageLimit
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            closeCreateKeyModal();
+            alert(`✅ API Key创建成功！\\n\\n密钥: ${result.key}\\n\\n请妥善保管您的API Key！`);
+            location.reload(); // 刷新页面显示新的API Key
+        } else {
+            alert(`❌ 创建失败: ${result.error || result.message || '未知错误'}`);
+        }
+    } catch (error) {
+        alert(`❌ 网络错误: ${error.message}`);
+    }
+}
+
+// 复制API Key到剪贴板
+function copyApiKey(key) {
+    navigator.clipboard.writeText(key).then(() => {
+        showNotification('API Key已复制到剪贴板', 'success');
+    }).catch(() => {
+        showNotification('复制失败，请手动复制', 'error');
+    });
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 6px;
+        color: white;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'success' ? 'var(--text-primary)' : 'var(--accent)'};
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %} 

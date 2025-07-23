@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}关于我们 - NetSage{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="terminal-text">ABOUT NETSAGE</h1>
+            <p class="subtitle">专业级网络数据采集解决方案</p>
+        </div>
+        
+        <div class="mission-section">
+            <div class="mission-content">
+                <h2 class="terminal-text">我们的使命</h2>
+                <p>为开发者和企业提供最强大、最可靠的网络数据采集工具。让数据获取变得简单、高效、安全。</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">⚡</div>
+                    <span>毫秒级响应</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🛡️</div>
+                    <span>智能反检测</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🔧</div>
+                    <span>API优先</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">📊</div>
+                    <span>实时监控</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-section">
+            <h2 class="terminal-text">联系我们</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <strong>技术支持</strong>
+                    <p>support@webhunter.com</p>
+                </div>
+                <div class="contact-item">
+                    <strong>商务合作</strong>
+                    <p>sales@webhunter.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.about-container {
+    min-height: 100vh;
+    padding: 120px 0 50px;
+    background: var(--bg-primary);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: 3px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.mission-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 3rem;
+    margin-bottom: 3rem;
+}
+
+.mission-content h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.mission-content p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.tech-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.tech-item:hover {
+    border-color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.tech-icon {
+    font-size: 2rem;
+}
+
+.contact-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 3rem;
+}
+
+.contact-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.contact-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.contact-item strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.contact-item p {
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+}
+</style>
+{% endblock %} 

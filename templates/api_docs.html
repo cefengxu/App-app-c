@@ -1,0 +1,1767 @@
+{% extends "base.html" %}
+
+{% block title %}API文档 - NetSage{% endblock %}
+
+{% block content %}
+<div class="api-docs">
+    <div class="api-sidebar">
+        <div class="sidebar-header">
+            <h3>API 文档</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#introduction" class="active">简介</a></li>
+                <li><a href="#authentication">认证</a></li>
+                <li><a href="#pricing">计费说明</a></li>
+                <li>
+                    <span class="nav-group">接口</span>
+                    <ul>
+                        <li><a href="#fetch-api">网页内容获取 API</a></li>
+                        <li><a href="#search-api">网络检索 API</a></li>
+                        <li><a href="#crawl-api">智能爬取搜索 API</a></li>
+                    </ul>
+                </li>
+                <li><a href="#playground">在线测试</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="api-content">
+        <section id="introduction" class="doc-section">
+            <h1>NetSage API</h1>
+            <p class="api-intro">NetSage 提供强大的网页内容获取、智能总结和网络检索API，支持高并发、低延迟的数据获取与搜索需求。</p>
+        </section>
+
+        <section id="authentication" class="doc-section">
+            <h2>认证</h2>
+            <div class="content-block">
+                <p>所有API请求都需要使用API密钥进行认证。您可以在<a href="/dashboard">控制台</a>中管理您的API密钥。</p>
+                <div class="info-box">
+                    <div class="info-icon">ℹ️</div>
+                    <div class="info-content">
+                        请妥善保管您的API密钥，不要在客户端代码中明文存储或分享给他人。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="doc-section">
+            <h2>计费说明</h2>
+            <div class="content-block">
+                <p>NetSage 采用差异化计费模式，不同服务类型消耗不同的使用次数：</p>
+                
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>服务类型</th>
+                            <th>API端点</th>
+                            <th>调用1次消耗</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>search</td>
+                            <td>/api/v1/plgi/search</td>
+                            <td>1次使用次数</td>
+                            <td>基础搜索服务</td>
+                        </tr>
+                        <tr>
+                            <td>crawl</td>
+                            <td>/api/v1/plgi/crawl</td>
+                            <td>2次使用次数</td>
+                            <td>网页内容获取服务</td>
+                        </tr>
+                        <tr>
+                            <td>search-crawl</td>
+                            <td>/api/v1/plgi/search-crawl</td>
+                            <td>3次使用次数</td>
+                            <td>智能爬取服务</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box beta-notice">
+                    <div class="info-icon">🆓</div>
+                    <div class="info-content">
+                        <strong>公测阶段说明：</strong><br>
+                        目前处于公测阶段，所有服务免费提供。新用户首次登录自动获得一个免费API Key（30天有效期，2000次使用额度）。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fetch-api" class="doc-section">
+            <h2>网页内容获取 API</h2>
+            
+            <div class="content-block">
+                <h3>请求地址</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="method">POST</span>
+                        <span class="endpoint">/api/v1/plgi/crawl</span>
+                    </div>
+                    <pre><code>http://service.netsage.click:3738/api/v1/plgi/crawl</code></pre>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>请求头</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>必填</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Content-Type</td>
+                            <td>是</td>
+                            <td>application/json</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>请求参数</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>必填</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>url</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>需要爬取的目标网页URL</td>
+                        </tr>
+                        <tr>
+                            <td>fetch_engine</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>
+                                爬取引擎类型，可选值：<br>
+                                - pl_chrome：Chrome引擎（推荐）<br>
+                                - selenium：Selenium引擎<br>
+                                - pl_chrome_doc：Chrome文档引擎
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>parser</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>
+                                总结解释器版本，可选值：<br>
+                                - sum_v2：总结解释器v2版本<br>
+                                - sum：总结解释器v1版本
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>params</td>
+                            <td>object</td>
+                            <td>否</td>
+                            <td>
+                                可选参数配置对象，可包含：<br>
+                                - reranker：是否启用重排引擎（boolean）
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>key</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>用户的API密钥，用于身份验证</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>响应参数</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>status</td>
+                            <td>integer</td>
+                            <td>状态码，200表示成功</td>
+                        </tr>
+                        <tr>
+                            <td>msg</td>
+                            <td>string</td>
+                            <td>响应消息</td>
+                        </tr>
+                        <tr>
+                            <td>data.times</td>
+                            <td>float</td>
+                            <td>API总处理时间（秒）</td>
+                        </tr>
+                        <tr>
+                            <td>data.results.status.status</td>
+                            <td>string</td>
+                            <td>爬取状态</td>
+                        </tr>
+                        <tr>
+                            <td>data.results.response.md</td>
+                            <td>string</td>
+                            <td>生成的Markdown格式内容</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>示例请求</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>CURL</span>
+                    </div>
+                    <pre><code>curl --location 'http://service.netsage.click:3738/api/v1/plgi/crawl' \
+--header 'Content-Type: application/json' \
+--data '{
+    "url": "http://yahoo.js.cn/html/202011/1369.html",
+    "fetch_engine": "pl_chrome",
+    "parser": "sum_v2",
+    "params": {
+        "reranker": false
+    },
+    "key": "YOUR_API_KEY_HERE"
+}'</code></pre>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>示例响应</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>JSON</span>
+                    </div>
+                    <pre><code>{
+    "status": 200,
+    "msg": "success",
+    "data": {
+        "times": 1.5682954788208008,
+        "results": {
+            "status": {
+                "status": "success",
+                "msg": "",
+                "final_use_fetcher": "http",
+                "http_err": null
+            },
+            "response": {
+                "length": 1082,
+                "md": "- +1\n\n# 蟋蟀的鸣叫声是怎么产生的？\n\n[...省略内容...]"
+            }
+        }
+    }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="search-api" class="doc-section">
+            <h2>网络检索 API</h2>
+            
+            <div class="content-block">
+                <h3>请求地址</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="method">POST</span>
+                        <span class="endpoint">/api/v1/plgi/search</span>
+                    </div>
+                    <pre><code>http://service.netsage.click:3738/api/v1/plgi/search</code></pre>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>请求头</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>必填</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Content-Type</td>
+                            <td>是</td>
+                            <td>application/json</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>请求参数</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>必填</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>query</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>搜索查询词，支持中文和英文</td>
+                        </tr>
+                        <tr>
+                            <td>count</td>
+                            <td>integer</td>
+                            <td>否</td>
+                            <td>返回结果数量，默认为3，最大为10</td>
+                        </tr>
+                        <tr>
+                            <td>search_engine</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>
+                                搜索引擎类型，可选值：<br>
+                                - baidu：百度搜索（推荐）<br>
+                                - tagvily：Tagvily搜索<br>
+                                - exa：Exa搜索
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>params</td>
+                            <td>object</td>
+                            <td>否</td>
+                            <td>
+                                搜索参数，可选配置：<br>
+                                - mkt：市场地区代码（如：zh-CN, en-US）<br>
+                                - safe：安全搜索级别
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>key</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>用户的API密钥，用于身份验证</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>响应参数</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>status</td>
+                            <td>integer</td>
+                            <td>状态码，200表示成功</td>
+                        </tr>
+                        <tr>
+                            <td>msg</td>
+                            <td>string</td>
+                            <td>响应消息</td>
+                        </tr>
+                        <tr>
+                            <td>data.times</td>
+                            <td>float</td>
+                            <td>API总处理时间（秒）</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[]</td>
+                            <td>array</td>
+                            <td>搜索结果数组</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].siteName</td>
+                            <td>string</td>
+                            <td>结果页面标题</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].snippet</td>
+                            <td>string</td>
+                            <td>结果摘要文本</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].url</td>
+                            <td>string</td>
+                            <td>结果页面URL</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].content</td>
+                            <td>string</td>
+                            <td>页面内容（通常为"NA"）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>示例请求</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>CURL</span>
+                    </div>
+                    <pre><code>curl --location 'http://service.netsage.click:3738/api/v1/plgi/search' \
+--header 'Content-Type: application/json' \
+--data '{
+    "query": "如何培养良好的睡眠习惯",
+    "count": 2,
+    "search_engine": "baidu",
+    "params": {
+        "mkt": "zh-CN"
+    },
+    "key": "YOUR_API_KEY_HERE"
+}'</code></pre>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>示例响应</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>JSON</span>
+                    </div>
+                    <pre><code>{
+    "status": 200,
+    "msg": "success.",
+    "data": {
+        "times": 1.2122457027435303,
+        "results": [
+            {
+                "siteName": "如何培养良好的睡眠习惯？专家给出5个实用建议",
+                "snippet": "良好的睡眠习惯对身体健康至关重要，专家建议保持规律的作息时间...",
+                "url": "https://example.com/health/sleep-habits",
+                "content": "NA"
+            },
+            {
+                "siteName": "改善睡眠质量的10个科学方法",
+                "snippet": "科学研究表明，良好的睡眠环境、放松技巧和健康的生活方式...",
+                "url": "https://example.com/wellness/sleep-improvement",
+                "content": "NA"
+            }
+        ]
+    }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="crawl-api" class="doc-section">
+            <h2>智能爬取搜索 API</h2>
+            
+            <div class="content-block">
+                <h3>请求地址</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="method">POST</span>
+                        <span class="endpoint">/api/v1/plgi/search-crawl</span>
+                    </div>
+                    <pre><code>http://service.netsage.click:3738/api/v1/plgi/search-crawl</code></pre>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>请求头</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>必填</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Content-Type</td>
+                            <td>是</td>
+                            <td>application/json</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>请求参数</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>必填</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>query</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>搜索查询词，支持中文和英文</td>
+                        </tr>
+                        <tr>
+                            <td>count</td>
+                            <td>integer</td>
+                            <td>否</td>
+                            <td>返回结果数量，默认为1，最大为10</td>
+                        </tr>
+                        <tr>
+                            <td>search_engine</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>
+                                搜索引擎类型，可选值：<br>
+                                - baidu：百度搜索（推荐）<br>
+                                - tagvily：Tagvily搜索<br>
+                                - exa：Exa搜索
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>fetch_engine</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>
+                                爬取引擎类型，可选值：<br>
+                                - pl_chrome：Chrome引擎<br>
+                                - selenium：Selenium引擎<br>
+                                - pl_chrome_doc：Chrome文档引擎
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>params</td>
+                            <td>object</td>
+                            <td>否</td>
+                            <td>
+                                搜索参数，可选配置：<br>
+                                - mkt：市场地区代码（如：zh-CN, en-US）<br>
+                                - safe：安全搜索级别
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>rerank_engine</td>
+                            <td>boolean</td>
+                            <td>否</td>
+                            <td>是否启用重排引擎优化结果排序，默认为false（暂时不支持）</td>
+                        </tr>
+                        <tr>
+                            <td>key</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>用户的API密钥，用于身份验证</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>响应参数</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>参数名</th>
+                            <th>类型</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>status</td>
+                            <td>integer</td>
+                            <td>状态码，200表示成功</td>
+                        </tr>
+                        <tr>
+                            <td>msg</td>
+                            <td>string</td>
+                            <td>响应消息</td>
+                        </tr>
+                        <tr>
+                            <td>data.times</td>
+                            <td>float</td>
+                            <td>API总处理时间（秒）</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[]</td>
+                            <td>array</td>
+                            <td>搜索和爬取结果数组</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].url</td>
+                            <td>string</td>
+                            <td>搜索结果页面URL</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].title</td>
+                            <td>string</td>
+                            <td>页面标题</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].content</td>
+                            <td>string</td>
+                            <td>智能提取的页面核心内容</td>
+                        </tr>
+                        <tr>
+                            <td>data.results[].status</td>
+                            <td>string</td>
+                            <td>爬取状态（成功/失败）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-block">
+                <h3>示例请求</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>CURL</span>
+                    </div>
+                    <pre><code>curl --location 'http://service.netsage.click:3738/api/v1/plgi/search-crawl' \
+--header 'Content-Type: application/json' \
+--data '{
+    "query": "海洋生物的神秘世界",
+    "count": 2,
+    "search_engine": "baidu",
+    "key": "YOUR_API_KEY_HERE"
+}'</code></pre>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>示例响应</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>JSON</span>
+                    </div>
+                    <pre><code>{
+    "status": 200,
+    "msg": "success",
+    "data": {
+        "times": 3.2451920509338379,
+        "results": [
+            {
+                "url": "https://example.com/tech/quantum-computing",
+                "title": "植物生长的最佳环境条件",
+                "content": "植物生长的最佳环境条件是...",
+                "status": "success"
+            }
+        ]
+    }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="doc-section">
+            <h2>在线测试</h2>
+            <div class="content-block">
+                <div class="api-selector">
+                    <div class="selector-group">
+                        <label class="selector-label">选择API类型</label>
+                        <div class="selector-buttons">
+                            <button class="selector-btn active" onclick="switchAPI('fetch')">网页内容获取</button>
+                            <button class="selector-btn" onclick="switchAPI('search')">网络检索</button>
+                            <button class="selector-btn" onclick="switchAPI('crawl')">智能爬取搜索</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="api-tester">
+                    <!-- 网页内容获取测试表单 -->
+                    <div id="fetch-tester" class="test-form">
+                        <div class="form-group">
+                            <label for="fetch-url">目标URL</label>
+                            <input type="text" id="fetch-url" placeholder="输入需要爬取的网页URL" class="form-control" value="http://yahoo.js.cn/html/202011/1369.html">
+                        </div>
+                        <div class="form-group">
+                            <label for="fetch-engine">引擎类型</label>
+                            <select id="fetch-engine" class="form-control">
+                                <option value="pl_chrome">pl_chrome</option>
+                                <option value="selenium">selenium</option>
+                                <option value="pl_chrome_doc">pl_chrome_doc</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fetch-parser">解释器版本</label>
+                            <select id="fetch-parser" class="form-control">
+                                <option value="sum_v2">sum_v2（推荐）</option>
+                                <option value="sum">sum</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fetch-key">API密钥</label>
+                            {% if session.get('access_token') %}
+                                <input type="text" id="fetch-key" placeholder="输入您的API密钥" class="form-control" value="">
+                                <div class="api-key-hint">
+                                    <span class="hint-icon">💡</span>
+                                    <span>请前往<a href="{{ url_for('dashboard') }}">控制台</a>获取您的API密钥</span>
+                                </div>
+                            {% else %}
+                                <input type="text" id="fetch-key" placeholder="请先登录获取API密钥" class="form-control" value="" disabled>
+                                <div class="login-required">
+                                    <span class="warning-icon">⚠️</span>
+                                    <span>需要<a href="{{ url_for('login') }}">登录</a>后才能使用在线测试功能</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if session.get('access_token') %}
+                            <button onclick="testFetchAPI()" class="btn btn-primary">发送请求</button>
+                        {% else %}
+                            <button class="btn btn-primary disabled" disabled>请先登录</button>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 网络检索测试表单 -->
+                    <div id="search-tester" class="test-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="search-query">搜索查询</label>
+                            <input type="text" id="search-query" placeholder="输入搜索关键词" class="form-control" value="海洋生物的神秘世界">
+                        </div>
+                        <div class="form-group">
+                            <label for="search-count">结果数量</label>
+                            <select id="search-count" class="form-control">
+                                <option value="1">1条</option>
+                                <option value="2" selected>2条</option>
+                                <option value="3">3条</option>
+                                <option value="5">5条</option>
+                                <option value="10">10条</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="search-engine">搜索引擎</label>
+                            <select id="search-engine" class="form-control">
+                                <option value="baidu" selected>百度</option>
+                                <option value="tagvily">Tagvily</option>
+                                <option value="exa">Exa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="search-mkt">市场代码</label>
+                            <select id="search-mkt" class="form-control">
+                                <option value="zh-CN" selected>zh-CN (中文简体)</option>
+                                <option value="en-US">en-US (英语美国)</option>
+                                <option value="en-GB">en-GB (英语英国)</option>
+                                <option value="ja-JP">ja-JP (日语)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="search-key">API密钥</label>
+                            {% if session.get('access_token') %}
+                                <input type="text" id="search-key" placeholder="输入您的API密钥" class="form-control" value="">
+                                <div class="api-key-hint">
+                                    <span class="hint-icon">💡</span>
+                                    <span>请前往<a href="{{ url_for('dashboard') }}">控制台</a>获取您的API密钥</span>
+                                </div>
+                            {% else %}
+                                <input type="text" id="search-key" placeholder="请先登录获取API密钥" class="form-control" value="" disabled>
+                                <div class="login-required">
+                                    <span class="warning-icon">⚠️</span>
+                                    <span>需要<a href="{{ url_for('login') }}">登录</a>后才能使用在线测试功能</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if session.get('access_token') %}
+                            <button onclick="testSearchAPI()" class="btn btn-primary">发送请求</button>
+                        {% else %}
+                            <button class="btn btn-primary disabled" disabled>请先登录</button>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 智能爬取搜索测试表单 -->
+                    <div id="crawl-tester" class="test-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="crawl-query">搜索查询</label>
+                            <input type="text" id="crawl-query" placeholder="输入搜索关键词" class="form-control" value="量子计算机的工作原理">
+                        </div>
+                        <div class="form-group">
+                            <label for="crawl-count">结果数量</label>
+                            <select id="crawl-count" class="form-control">
+                                <option value="1" selected>1条</option>
+                                <option value="2">2条</option>
+                                <option value="3">3条</option>
+                                <option value="5">5条</option>
+                                <option value="10">10条</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="crawl-search-engine">搜索引擎</label>
+                            <select id="crawl-search-engine" class="form-control">
+                                <option value="baidu" selected>百度</option>
+                                <option value="tagvily">Tagvily</option>
+                                <option value="exa">Exa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="crawl-fetch-engine">爬取引擎</label>
+                            <select id="crawl-fetch-engine" class="form-control">
+                                <option value="pl_chrome" selected>pl_chrome</option>
+                                <option value="selenium">selenium</option>
+                                <option value="pl_chrome_doc">pl_chrome_doc</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="crawl-mkt">市场代码</label>
+                            <select id="crawl-mkt" class="form-control">
+                                <option value="zh-CN" selected>zh-CN (中文简体)</option>
+                                <option value="en-US">en-US (英语美国)</option>
+                                <option value="en-GB">en-GB (英语英国)</option>
+                                <option value="ja-JP">ja-JP (日语)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: none;">
+                            <label for="crawl-rerank">重排引擎</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="crawl-rerank" class="glow-checkbox">
+                                <label for="crawl-rerank" class="checkbox-label">启用重排引擎</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="crawl-key">API密钥</label>
+                            {% if session.get('access_token') %}
+                                <input type="text" id="crawl-key" placeholder="输入您的API密钥" class="form-control" value="">
+                                <div class="api-key-hint">
+                                    <span class="hint-icon">💡</span>
+                                    <span>请前往<a href="{{ url_for('dashboard') }}">控制台</a>获取您的API密钥</span>
+                                </div>
+                            {% else %}
+                                <input type="text" id="crawl-key" placeholder="请先登录获取API密钥" class="form-control" value="" disabled>
+                                <div class="login-required">
+                                    <span class="warning-icon">⚠️</span>
+                                    <span>需要<a href="{{ url_for('login') }}">登录</a>后才能使用在线测试功能</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if session.get('access_token') %}
+                            <button onclick="testCrawlAPI()" class="btn btn-primary">发送请求</button>
+                        {% else %}
+                            <button class="btn btn-primary disabled" disabled>请先登录</button>
+                        {% endif %}
+                    </div>
+                    <div class="test-response">
+                        <div class="code-header">
+                            <span>响应结果</span>
+                            <div class="response-time" id="response-time" style="display: none;">
+                                <span class="time-label">响应时间:</span>
+                                <span class="time-value"></span>
+                            </div>
+                        </div>
+                        <pre><code id="response-data">// 响应将显示在这里</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+.api-docs {
+    display: flex;
+    min-height: calc(100vh - 60px);
+    padding-top: 60px;
+    background: var(--bg-primary);
+}
+
+.api-sidebar {
+    width: 260px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 1px;
+}
+
+.sidebar-nav {
+    padding: 1rem 0;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin: 0.5rem 0;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-family: 'Fira Code', monospace;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    text-shadow: 0 0 5px var(--text-primary);
+}
+
+.nav-group {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Fira Code', monospace;
+    font-weight: 600;
+}
+
+.api-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 2rem 3rem;
+    max-width: 1200px;
+    background: var(--bg-primary);
+}
+
+.doc-section {
+    margin-bottom: 3rem;
+}
+
+.doc-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--text-primary);
+}
+
+.doc-section h2 {
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 1px;
+}
+
+.api-intro {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.content-block {
+    margin-bottom: 2rem;
+    max-width: 1000px;
+}
+
+.content-block h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    text-align: left;
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 1px;
+}
+
+.code-block {
+    background: #1e1e1e;
+    border: 1px solid #2d2d2d;
+    border-radius: 6px;
+    overflow: hidden;
+    text-align: left;
+    max-width: 800px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+    color: #e0e0e0;
+}
+
+.code-header .method {
+    color: #fff;
+    background: var(--text-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: 'Fira Code', monospace;
+    font-weight: 600;
+}
+
+.code-header .endpoint {
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.copy-btn {
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Fira Code', monospace;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    box-shadow: 0 0 10px var(--text-primary);
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+    background: #1e1e1e;
+    text-align: left;
+}
+
+.code-block code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    display: block;
+    text-align: left;
+}
+
+.code-block .string { color: #ce9178; }
+.code-block .number { color: #b5cea8; }
+.code-block .boolean { color: #569cd6; }
+.code-block .null { color: #569cd6; }
+.code-block .key { color: #9cdcfe; }
+.code-block .punctuation { color: #d4d4d4; }
+
+.params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    text-align: left;
+    max-width: 800px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.params-table th,
+.params-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border: 1px solid var(--border);
+}
+
+.params-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.params-table td {
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.info-box {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid var(--text-primary);
+    border-radius: 6px;
+    margin: 1rem 0;
+}
+
+.info-icon {
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.info-content {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.beta-notice {
+    background: rgba(255, 215, 0, 0.1) !important;
+    border-color: #ffd700 !important;
+}
+
+.beta-notice .info-icon {
+    color: #ffd700 !important;
+    text-shadow: 0 0 10px #ffd700;
+}
+
+.beta-notice .info-content {
+    color: var(--text-secondary) !important;
+}
+
+.beta-notice .info-content strong {
+    color: #ffd700;
+    text-shadow: 0 0 5px #ffd700;
+}
+
+.api-tester {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    max-width: 800px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.test-form {
+    margin-bottom: 2rem;
+    max-width: 800px;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
+.form-group label {
+    width: 100px;
+    text-align: left;
+    margin-bottom: 0;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.form-control {
+    flex: 1;
+    max-width: 600px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-primary {
+    margin-left: 100px;
+    padding: 0.5rem 2rem;
+    background: var(--gradient);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 65, 0.4);
+}
+
+.btn-primary.disabled {
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.btn-primary.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.api-key-hint, .login-required {
+    margin-top: 0.5rem;
+    margin-left: 100px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+}
+
+.api-key-hint a, .login-required a {
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.api-key-hint a:hover, .login-required a:hover {
+    color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.hint-icon {
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00;
+}
+
+.warning-icon {
+    color: var(--accent);
+    text-shadow: 0 0 5px var(--accent);
+}
+
+.form-control:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: var(--text-muted);
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.glow-checkbox {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffd700;
+    border-radius: 4px;
+    background: var(--bg-primary);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.glow-checkbox:hover {
+    border-color: #ffed4e;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.glow-checkbox:checked {
+    background: #ffd700;
+    border-color: #ffed4e;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+}
+
+.glow-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--bg-primary);
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.checkbox-label {
+    color: var(--text-secondary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.checkbox-label:hover {
+    color: var(--text-primary);
+}
+
+.api-selector {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-width: 800px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.selector-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.selector-label {
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.selector-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.selector-btn {
+    padding: 0.5rem 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.selector-btn:hover {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+}
+
+.selector-btn.active {
+    background: var(--gradient);
+    color: var(--bg-primary);
+    border-color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.test-response {
+    background: #1e1e1e;
+    border: 1px solid #2d2d2d;
+    border-radius: 6px;
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.test-response .code-header {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+.response-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.time-value {
+    color: #ffff00;
+    text-shadow: 0 0 8px #ffff00, 0 0 12px #ffff00;
+    font-weight: bold;
+    background: rgba(255, 255, 0, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 0, 0.3);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+#response-data {
+    margin: 0;
+    padding: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    background: #1e1e1e;
+    display: block;
+    text-align: left;
+}
+
+/* 滚动条样式 */
+.api-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.api-sidebar::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+.api-sidebar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.api-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--text-primary);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .api-docs {
+        flex-direction: column;
+    }
+    
+    .api-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    
+    .api-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .form-group label {
+        width: auto;
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+    
+    .btn-primary {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .api-key-hint, .login-required {
+        margin-left: 0;
+    }
+}
+</style>
+
+<script>
+// API切换功能
+function switchAPI(apiType) {
+    // 更新按钮状态
+    document.querySelectorAll('.selector-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // 切换测试表单
+    const fetchTester = document.getElementById('fetch-tester');
+    const searchTester = document.getElementById('search-tester');
+    const crawlTester = document.getElementById('crawl-tester');
+    
+    if (apiType === 'fetch') {
+        fetchTester.style.display = 'block';
+        searchTester.style.display = 'none';
+        crawlTester.style.display = 'none';
+    } else if (apiType === 'search') {
+        fetchTester.style.display = 'none';
+        searchTester.style.display = 'block';
+        crawlTester.style.display = 'none';
+    } else if (apiType === 'crawl') {
+        fetchTester.style.display = 'none';
+        searchTester.style.display = 'none';
+        crawlTester.style.display = 'block';
+    }
+}
+
+// 网页内容获取API测试
+async function testFetchAPI() {
+    const url = document.getElementById('fetch-url').value;
+    const fetch_engine = document.getElementById('fetch-engine').value;
+    const parser = document.getElementById('fetch-parser').value;
+    const key = document.getElementById('fetch-key').value;
+    const responseElement = document.getElementById('response-data');
+    const responseTimeElement = document.getElementById('response-time');
+
+    if (!url || !fetch_engine || !parser || !key) {
+        responseElement.textContent = '错误：请填写所有必需参数';
+        responseTimeElement.style.display = 'none';
+        return;
+    }
+
+    responseElement.textContent = '正在发送请求...';
+    responseTimeElement.style.display = 'none';
+
+    try {
+        const response = await fetch('/api/proxy/fetch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                url: url,
+                fetch_engine: fetch_engine,
+                parser: parser,
+                params: {},
+                key: key
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        responseElement.innerHTML = formatJSON(data);
+        
+        // 提取并显示响应时间
+        if (data.data && data.data.times !== undefined) {
+            const timeInMs = Math.round(data.data.times * 1000);
+            const timeValueElement = responseTimeElement.querySelector('.time-value');
+            timeValueElement.textContent = `${timeInMs} ms`;
+            responseTimeElement.style.display = 'flex';
+        }
+    } catch (error) {
+        responseElement.textContent = `错误：${error.message}\n\n如果问题持续存在，请确保：\n1. API密钥是有效的\n2. 目标URL是可访问的\n3. 服务器正常运行`;
+        responseTimeElement.style.display = 'none';
+    }
+}
+
+// 网络检索API测试
+async function testSearchAPI() {
+    const query = document.getElementById('search-query').value;
+    const count = parseInt(document.getElementById('search-count').value);
+    const search_engine = document.getElementById('search-engine').value;
+    const mkt = document.getElementById('search-mkt').value;
+    const key = document.getElementById('search-key').value;
+    const responseElement = document.getElementById('response-data');
+    const responseTimeElement = document.getElementById('response-time');
+
+    if (!query || !search_engine || !key) {
+        responseElement.textContent = '错误：请填写所有必需参数';
+        responseTimeElement.style.display = 'none';
+        return;
+    }
+
+    responseElement.textContent = '正在发送请求...';
+    responseTimeElement.style.display = 'none';
+
+    try {
+        const startTime = Date.now();
+        
+        const response = await fetch('/api/proxy/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                query: query,
+                count: count,
+                search_engine: search_engine,
+                params: {
+                    mkt: mkt
+                },
+                key: key
+            })
+        });
+
+        const endTime = Date.now();
+        const clientTime = (endTime - startTime) / 1000;
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        responseElement.innerHTML = formatJSON(data);
+        
+        // 显示响应时间
+        if (data.data && data.data.times) {
+            responseTimeElement.querySelector('.time-value').textContent = `${data.data.times.toFixed(2)}s`;
+            responseTimeElement.style.display = 'flex';
+        }
+    } catch (error) {
+        responseElement.textContent = `错误：${error.message}\n\n如果问题持续存在，请确保：\n1. API密钥是有效的\n2. 搜索查询词不为空\n3. 服务器正常运行`;
+        responseTimeElement.style.display = 'none';
+    }
+}
+
+// 智能爬取搜索API测试
+async function testCrawlAPI() {
+    const query = document.getElementById('crawl-query').value;
+    const count = parseInt(document.getElementById('crawl-count').value);
+    const search_engine = document.getElementById('crawl-search-engine').value;
+    const fetch_engine = document.getElementById('crawl-fetch-engine').value;
+    const mkt = document.getElementById('crawl-mkt').value;
+    const rerank_engine = false; // 暂时不支持重排引擎
+    const key = document.getElementById('crawl-key').value;
+    const responseElement = document.getElementById('response-data');
+    const responseTimeElement = document.getElementById('response-time');
+
+    if (!query || !search_engine || !fetch_engine || !key) {
+        responseElement.textContent = '错误：请填写所有必需参数';
+        responseTimeElement.style.display = 'none';
+        return;
+    }
+
+    responseElement.textContent = '正在发送请求...';
+    responseTimeElement.style.display = 'none';
+
+    try {
+        const startTime = Date.now();
+        
+        const response = await fetch('/api/proxy/crawl', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                query: query,
+                count: count,
+                search_engine: search_engine,
+                params: {
+                    mkt: mkt
+                },
+                key: key,
+                rerank_engine: rerank_engine
+            })
+        });
+
+        const endTime = Date.now();
+        const clientTime = (endTime - startTime) / 1000;
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        responseElement.innerHTML = formatJSON(data);
+        
+        // 显示响应时间
+        if (data.data && data.data.times) {
+            responseTimeElement.querySelector('.time-value').textContent = `${data.data.times.toFixed(2)}s`;
+            responseTimeElement.style.display = 'flex';
+        }
+    } catch (error) {
+        responseElement.textContent = `错误：${error.message}\n\n如果问题持续存在，请确保：\n1. API密钥是有效的\n2. 搜索查询词不为空\n3. 网络连接正常\n4. 服务器正常运行`;
+        responseTimeElement.style.display = 'none';
+    }
+}
+
+function formatJSON(json) {
+    if (typeof json === 'string') {
+        try {
+            json = JSON.parse(json);
+        } catch (e) {
+            return json;
+        }
+    }
+    
+    const syntaxHighlight = (obj) => {
+        let jsonString = JSON.stringify(obj, null, 2);
+        jsonString = jsonString.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return jsonString.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+            let cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'key';
+                } else {
+                    cls = 'string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'boolean';
+            } else if (/null/.test(match)) {
+                cls = 'null';
+            }
+            return `<span class="${cls}">${match}</span>`;
+        });
+    };
+
+    return syntaxHighlight(json);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('.doc-section');
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+    function setActiveLink() {
+        let currentSection = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (window.scrollY >= sectionTop - 100) {
+                currentSection = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').slice(1) === currentSection) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    setActiveLink();
+
+    const responseExample = document.querySelector('#fetch-api .code-block:last-child code');
+    if (responseExample) {
+        try {
+            const json = JSON.parse(responseExample.textContent);
+            responseExample.innerHTML = formatJSON(json);
+        } catch (e) {
+            console.error('Failed to format example response:', e);
+        }
+    }
+});
+</script>
+{% endblock %} 
