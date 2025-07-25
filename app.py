@@ -156,6 +156,8 @@ def proxy_fetch():
                 return jsonify({'error': 'API Key验证失败'}), 403
         
         # 调用实际的API服务（直接转发原始请求）
+        print("🧩 CRAWL_API_URL", CRAWL_API_URL)
+        print("🧩 request_data", request_data)
         response = requests.post(CRAWL_API_URL, json=request_data)
         return jsonify(response.json()), response.status_code
         
@@ -183,6 +185,8 @@ def proxy_search():
                 return jsonify({'error': 'API Key验证失败'}), 403
         
         # 调用实际的API服务（直接转发原始请求）
+        print("🧩 SEARCH_API_URL", )
+        print("🧩 request_data", request_data)
         response = requests.post(SEARCH_API_URL, json=request_data)
         return jsonify(response.json()), response.status_code
         
@@ -213,6 +217,8 @@ def proxy_crawl():
                 return jsonify({'error': 'API Key验证失败'}), 403
         
         # 调用实际的API服务（直接转发原始请求）
+        print("🧩 SEARCH_CRAWL_API_URL", SEARCH_CRAWL_API_URL)
+        print("🧩 request_data", request_data)
         response = requests.post(SEARCH_CRAWL_API_URL, json=request_data)
         return jsonify(response.json()), response.status_code
         
