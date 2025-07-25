@@ -142,6 +142,7 @@ def proxy_fetch():
         
         # 从请求中获取API Key
         api_key = request.headers.get('X-API-Key') or request_data.get('key')
+        print("🧩 api_key", api_key)
         
         # 如果有API Key，进行验证和扣费
         if api_key:
@@ -151,6 +152,7 @@ def proxy_fetch():
                 params={'app_id': APP_ID},
                 json=verify_data
             )
+            print("🧩 verify_response", verify_response)
             
             if verify_response.status_code != 200 or not verify_response.json().get('is_valid'):
                 return jsonify({'error': 'API Key验证失败'}), 403
@@ -171,7 +173,7 @@ def proxy_search():
         
         # 从请求中获取API Key
         api_key = request.headers.get('X-API-Key') or request_data.get('key')
-        
+        print("🧩 api_key", api_key)
         # 如果有API Key，进行验证和扣费
         if api_key:
             verify_data = {'service_type': 'search'}  # search服务消耗1次
@@ -180,7 +182,7 @@ def proxy_search():
                 params={'app_id': APP_ID},
                 json=verify_data
             )
-            
+            print("🧩 verify_response", verify_response)
             if verify_response.status_code != 200 or not verify_response.json().get('is_valid'):
                 return jsonify({'error': 'API Key验证失败'}), 403
         
@@ -200,7 +202,7 @@ def proxy_crawl():
         
         # 从请求中获取API Key
         api_key = request.headers.get('X-API-Key') or request_data.get('key')
-        
+        print("🧩 api_key", api_key)
         # 暂时不支持重排引擎
         service_type = 'crawl'
         
@@ -212,7 +214,7 @@ def proxy_crawl():
                 params={'app_id': APP_ID},
                 json=verify_data
             )
-            
+            print("🧩 verify_response", verify_response)
             if verify_response.status_code != 200 or not verify_response.json().get('is_valid'):
                 return jsonify({'error': 'API Key验证失败'}), 403
         
