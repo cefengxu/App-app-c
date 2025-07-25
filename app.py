@@ -138,6 +138,7 @@ def verify_api_key(key):
 @app.route('/api/proxy/fetch', methods=['POST'])
 def proxy_fetch():
     try:
+        print("🧩 proxy_fetch",request.json)
         request_data = request.json or {}
         
         # 从请求中获取API Key
@@ -169,6 +170,7 @@ def proxy_fetch():
 @app.route('/api/proxy/search', methods=['POST'])
 def proxy_search():
     try:
+        print("🧩 proxy_search",request.json)
         request_data = request.json or {}
         
         # 从请求中获取API Key
@@ -198,6 +200,8 @@ def proxy_search():
 @app.route('/api/proxy/crawl', methods=['POST'])
 def proxy_crawl():
     try:
+        print("🧩 proxy_crawl",request.json)
+        
         request_data = request.json or {}
         
         # 从请求中获取API Key
