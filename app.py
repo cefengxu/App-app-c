@@ -13,9 +13,12 @@ API_BASE_URL = "http://3.142.135.28:1605/api/v1"
 APP_ID = "app-c"  # 固定应用ID
 
 # 微服务访问接口更新
-SEARCH_API_URL = 'http://service.netsage.click:3738/api/v1/plgi/search'
-CRAWL_API_URL = 'http://service.netsage.click:3738/api/v1/plgi/crawl'
-SEARCH_CRAWL_API_URL = 'http://service.netsage.clickm:3738/api/v1/plgi/search-crawl'
+# SEARCH_API_URL = 'http://service.netsage.click:3738/api/v1/plgi/search'
+# CRAWL_API_URL = 'http://service.netsage.click:3738/api/v1/plgi/crawl'
+# SEARCH_CRAWL_API_URL = 'http://service.netsage.clickm:3738/api/v1/plgi/search-crawl'
+SEARCH_API_URL = 'http://alb-crawl-924336409.us-east-2.elb.amazonaws.com:3738/api/v1/plgi/search'
+CRAWL_API_URL = 'http://alb-crawl-924336409.us-east-2.elb.amazonaws.com:3738/api/v1/plgi/crawl'
+SEARCH_CRAWL_API_URL = 'http://alb-crawl-924336409.us-east-2.elb.amazonaws.com:3738/api/v1/plgi/search-crawl'
 
 # 用户管理及密钥核实服务更新
 USER_MANAGEMENT_URL = 'http://3.142.135.28:1605'
