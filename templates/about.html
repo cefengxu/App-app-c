@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}关于我们 - NetSage{% endblock %}
+{% block title %}关于我们 - Koba.Ai{% endblock %}
 
 {% block content %}
 <div class="about-container">
     <div class="container">
         <div class="section-header">
-            <h1 class="terminal-text">ABOUT NETSAGE</h1>
+            <h1 class="terminal-text">ABOUT KOBA.AI</h1>
             <p class="subtitle">专业级网络数据采集解决方案</p>
         </div>
         
         <div class="mission-section">
             <div class="mission-content">
-                <h2 class="terminal-text">我们的使命</h2>
-                <p>为开发者和企业提供最强大、最可靠的网络数据采集工具。让数据获取变得简单、高效、安全。</p>
+                <h2 class="terminal-text">我们的初衷</h2>
+                <p>为开发者提供最强大、最可靠的网络数据采集工具。让数据获取变得简单、高效。</p>
             </div>
             <div class="tech-grid">
                 <div class="tech-item">
@@ -36,15 +36,23 @@
         </div>
         
         <div class="contact-section">
-            <h2 class="terminal-text">联系我们</h2>
-            <div class="contact-grid">
-                <div class="contact-item">
-                    <strong>技术支持</strong>
-                    <p>support@webhunter.com</p>
-                </div>
-                <div class="contact-item">
-                    <strong>商务合作</strong>
-                    <p>sales@webhunter.com</p>
+            <h2 class="terminal-text">加入用户群</h2>
+            <div class="qr-container">
+                <img src="/static/images/Feishu202507290104805.png" alt="Koba.Ai 技术支持" class="qr-code">
+                <p class="qr-text">扫码加入飞书用户群，获取技术支持</p>
+                <div class="qr-benefits">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">💬</span>
+                        <span>实时技术咨询</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">🚀</span>
+                        <span>最新功能抢先体验</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">👥</span>
+                        <span>交流分享经验</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -125,6 +133,7 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 3rem;
+    text-align: center;
 }
 
 .contact-section h2 {
@@ -133,30 +142,50 @@
     text-align: center;
 }
 
-.contact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-.contact-item {
-    text-align: center;
-    padding: 1.5rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+.qr-code {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    padding: 10px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
-.contact-item strong {
+.qr-code:hover {
+    transform: scale(1.05);
+}
+
+.qr-text {
+    font-size: 1.2rem;
     color: var(--text-primary);
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    margin: 1rem 0;
 }
 
-.contact-item p {
+.qr-benefits {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--text-muted);
-    font-family: 'Fira Code', monospace;
+}
+
+.benefit-icon {
+    font-size: 1.2rem;
 }
 </style>
 {% endblock %} 
